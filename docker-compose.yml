@@ -13,8 +13,8 @@ services:
       - AMQ_ROLE=admin
       - AMQ_NAME=broker
       - AMQ_TRANSPORTS=openwire,amqp,stomp,mqtt,hornetq
-      - AMQ_QUEUES=component2.queue,component4.queue,weblogic.input.queue
-      - AMQ_ADDRESSES=component2.queue,component4.queue,weblogic.input.queue
+      - AMQ_QUEUES=component2.queue,component3-to-component4,component4.queue,weblogic.input.queue
+      - AMQ_ADDRESSES=component2.queue,component3-to-component4,component4.queue,weblogic.input.queue
     networks:
       - artemis-network
     healthcheck:
@@ -47,6 +47,23 @@ services:
     container_name: component-2
     ports:
       - "8082:8082"
+    environment:
+      - ARTEMIS_BROKER_URL=tcp://artemis:61616
+      - ARTEMIS_BROKER_USER=admin
+      - ARTEMIS_BROKER_PASSWORD=admin
+    depends_on:
+      artemis:
+        condition: service_healthy
+    networks:
+      - artemis-network
+
+  component-3:
+    build:
+      context: ./component-3
+      dockerfile: Dockerfile
+    container_name: component-3
+    ports:
+      - "8083:8083"
     environment:
       - ARTEMIS_BROKER_URL=tcp://artemis:61616
       - ARTEMIS_BROKER_USER=admin
