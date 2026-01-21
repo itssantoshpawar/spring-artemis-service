@@ -6,7 +6,8 @@ This is a Proof of Concept (POC) demonstrating the migration from WebLogic JMS t
 
 1. **Component 1**: Acts as a message adapter between WebLogic and Artemis, exposing REST API for message production
 2. **Component 2**: Consumes messages from Artemis queues
-3. **Component 4**: Consumes messages indirectly through Component 1 using queue-to-queue communication
+3. **Component 3**: Sends messages to Component 4 via Artemis queues (component3-to-component4 queue)
+4. **Component 4**: Consumes messages indirectly through Component 1 or Component 3 using queue-to-queue communication
 
 ## Architecture
 
@@ -28,13 +29,21 @@ This is a Proof of Concept (POC) demonstrating the migration from WebLogic JMS t
           ├─────► component2.queue ─────► Component 2 (Port 8082)
           │
           └─────► component4.queue ─────► Component 4 (Port 8084)
+                                             ▲
+                                             │
+┌─────────────────────────────────┐          │
+│      Component 3 (Port 8083)    │          │
+│   Producer/Consumer Service     │──────────┘
+│  - Listens: component3-to-component4       
+│  - Sends: component4.queue                  
+└─────────────────────────────────┘
 ```
 
 ## Technologies
 
-- **Spring Boot 2.7.14**
+- **Spring Boot 3.2.0**
 - **Apache ActiveMQ Artemis 2.28.0**
-- **Java 11**
+- **Java 17**
 - **Maven**
 - **Docker & Docker Compose**
 
@@ -47,6 +56,10 @@ spring-artemis-service/
 │   ├── Dockerfile
 │   └── pom.xml
 ├── component-2/              # Consumer Service
+│   ├── src/
+│   ├── Dockerfile
+│   └── pom.xml
+├── component-3/              # Producer/Consumer Service
 │   ├── src/
 │   ├── Dockerfile
 │   └── pom.xml
@@ -63,6 +76,7 @@ spring-artemis-service/
 ├── build-all.bat            # Build script
 ├── run-component1.bat       # Run Component 1 locally
 ├── run-component2.bat       # Run Component 2 locally
+├── run-component3.bat       # Run Component 3 locally
 ├── run-component4.bat       # Run Component 4 locally
 ├── run-docker.bat           # Run all in Docker
 └── stop-docker.bat          # Stop Docker containers
@@ -71,7 +85,7 @@ spring-artemis-service/
 ## Prerequisites
 
 ### For Local Development
-- Java 11 or higher
+- Java 17 or higher
 - Maven 3.6+
 - Apache ActiveMQ Artemis (running locally or in Docker)
 
@@ -109,7 +123,10 @@ run-component1.bat
 # Terminal 2 - Run Component 2
 run-component2.bat
 
-# Terminal 3 - Run Component 4
+# Terminal 3 - Run Component 3
+run-component3.bat
+
+# Terminal 4 - Run Component 4
 run-component4.bat
 ```
 
@@ -252,6 +269,7 @@ environment:
 
 The following queues are configured in Artemis:
 - `component2.queue` - Messages for Component 2
+- `component3-to-component4` - Messages from Component 3 to Component 4
 - `component4.queue` - Messages for Component 4
 - `weblogic.input.queue` - Optional queue for WebLogic integration
 
