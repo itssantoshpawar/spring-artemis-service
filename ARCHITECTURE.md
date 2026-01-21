@@ -37,12 +37,23 @@ This POC demonstrates a migration strategy from WebLogic JMS to Apache ActiveMQ 
 │                  │  │                 │
 │ Artemis Consumer │  │ Artemis Consumer│
 └──────────────────┘  └─────────────────┘
+                             ▲
+                             │ JMS
+                             │
+┌─────────────────────────────────────────┐
+│      Component 3 (Port 8083)            │
+│   Producer/Consumer Service             │
+├─────────────────────────────────────────┤
+│ • Listens: component3-to-component4     │
+│ • Processes and forwards to:            │
+│   component4.queue                      │
+└─────────────────────────────────────────┘
 
-                 ┌─────────────────────┐
-                 │   Artemis Broker    │
-                 │   (Port 61616)      │
-                 │   Web UI: 8161      │
-                 └─────────────────────┘
+               ┌─────────────────────┐
+               │   Artemis Broker    │
+               │   (Port 61616)      │
+               │   Web UI: 8161      │
+               └─────────────────────┘
 ```
 
 ## Component Details
@@ -93,9 +104,30 @@ artemis:
 - Queue Name: `component2.queue`
 - Concurrent Consumers: 5
 
+### Component 3: Producer/Consumer Service
+**Port:** 8083  
+**Purpose:** Receives messages and forwards them to Component 4 via Artemis
+
+#### Responsibilities:
+1. **Message Consumption** - Listens to component3-to-component4 queue
+2. **Message Processing** - Processes and enriches messages
+3. **Message Production** - Forwards processed messages to component4.queue
+4. **Logging** - Logs received and forwarded messages with timestamps
+
+#### Key Classes:
+- `Component3Application` - Main Spring Boot application
+- `ArtemisMessageListener` - JMS listener for component3-to-component4 queue
+- `MessageForwardingService` - Service for forwarding messages to Component 4
+- `ArtemisJmsConfig` - Artemis connection configuration
+
+#### Queue Configuration:
+- Input Queue: `component3-to-component4`
+- Output Queue: `component4.queue`
+- Concurrent Consumers: 5
+
 ### Component 4: Secondary Consumer Service
 **Port:** 8084  
-**Purpose:** Consumes and processes messages from component4.queue (indirect consumption via Component 1)
+**Purpose:** Consumes and processes messages from component4.queue (indirect consumption via Component 1 or Component 3)
 
 #### Responsibilities:
 1. **Message Consumption** - Listens to component4.queue
@@ -128,7 +160,15 @@ artemis:
 4. Component 4 processes from component4.queue
 5. Parallel message consumption
 
-### Scenario 3: WebLogic to Artemis Migration (Optional)
+### Scenario 3: Component 3 to Component 4 Flow
+1. Message arrives in component3-to-component4 queue
+2. Component 3 receives and processes the message
+3. Component 3 enriches/transforms the message
+4. Component 3 forwards to component4.queue
+5. Component 4 consumes and processes from component4.queue
+6. Demonstrates queue-to-queue forwarding pattern
+
+### Scenario 4: WebLogic to Artemis Migration (Optional)
 1. Message arrives in WebLogic queue
 2. Component 1's WebLogic listener receives the message
 3. Component 1 logs the WebLogic message
@@ -139,8 +179,8 @@ artemis:
 ## Technology Stack
 
 ### Core Technologies
-- **Java:** 11
-- **Spring Boot:** 2.7.14
+- **Java:** 17
+- **Spring Boot:** 3.2.0
 - **Apache ActiveMQ Artemis:** 2.28.0
 - **Maven:** 3.6+
 - **Docker:** Latest
@@ -185,6 +225,7 @@ services:
   artemis:      # Artemis broker
   component-1:  # Adapter service
   component-2:  # Consumer service
+  component-3:  # Producer/Consumer service
   component-4:  # Consumer service
 
 networks:
@@ -204,12 +245,17 @@ networks:
    - Consumers: Component 2
    - Purpose: Primary message consumption
 
-2. **component4.queue**
+2. **component3-to-component4**
+   - Type: Anycast (point-to-point)
+   - Consumers: Component 3
+   - Purpose: Input queue for Component 3
+
+3. **component4.queue**
    - Type: Anycast (point-to-point)
    - Consumers: Component 4
    - Purpose: Secondary/parallel message consumption
 
-3. **weblogic.input.queue** (Optional)
+4. **weblogic.input.queue** (Optional)
    - Type: Anycast
    - Consumers: Component 1 (when WebLogic is enabled)
    - Purpose: WebLogic migration queue

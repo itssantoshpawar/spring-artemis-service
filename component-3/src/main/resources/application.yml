@@ -1,0 +1,32 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: component-3-producer-consumer
+  artemis:
+    mode: native
+    broker-url: ${ARTEMIS_BROKER_URL:tcp://localhost:61616}
+    user: ${ARTEMIS_BROKER_USER:admin}
+    password: ${ARTEMIS_BROKER_PASSWORD:admin}
+
+# Artemis Configuration
+artemis:
+  broker:
+    url: ${ARTEMIS_BROKER_URL:tcp://localhost:61616}
+    user: ${ARTEMIS_BROKER_USER:admin}
+    password: ${ARTEMIS_BROKER_PASSWORD:admin}
+  queue:
+    input: component3-to-component4
+    output: component4.queue
+  listener:
+    concurrent-consumers: 5
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.example.component3: DEBUG
+    org.springframework.jms: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
