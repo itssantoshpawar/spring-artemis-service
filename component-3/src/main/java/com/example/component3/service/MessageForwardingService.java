@@ -29,8 +29,4 @@ public class MessageForwardingService {
             throw new RuntimeException("Failed to forward message to Component 4", e);
         }
     }
-
-    public void sendMessage(String message) {
-        forwardToComponent4(message);
-    }
 }

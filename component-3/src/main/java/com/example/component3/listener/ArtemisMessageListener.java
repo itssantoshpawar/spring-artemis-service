@@ -3,6 +3,7 @@ package com.example.component3.listener;
 import com.example.component3.service.MessageForwardingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,9 @@ public class ArtemisMessageListener {
     private static final Logger logger = LoggerFactory.getLogger(ArtemisMessageListener.class);
     private final MessageForwardingService messageForwardingService;
 
+    @Value("${artemis.queue.input:component3-to-component4}")
+    private String inputQueue;
+
     public ArtemisMessageListener(MessageForwardingService messageForwardingService) {
         this.messageForwardingService = messageForwardingService;
     }
@@ -20,7 +24,7 @@ public class ArtemisMessageListener {
     public void receiveMessage(String message) {
         logger.info("============================================");
         logger.info("COMPONENT 3: Received message from Artemis");
-        logger.info("Queue: component3-to-component4");
+        logger.info("Queue: {}", inputQueue);
         logger.info("Message: {}", message);
         logger.info("Timestamp: {}", System.currentTimeMillis());
         logger.info("============================================");
