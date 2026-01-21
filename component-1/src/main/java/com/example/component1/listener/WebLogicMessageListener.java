@@ -8,7 +8,7 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnProperty(prefix = "weblogic.jms", name = "url")
+@ConditionalOnProperty(prefix = "weblogic.jms", name = "url", matchIfMissing = false)
 public class WebLogicMessageListener {
 
     private static final Logger logger = LoggerFactory.getLogger(WebLogicMessageListener.class);

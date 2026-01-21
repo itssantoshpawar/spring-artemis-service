@@ -24,15 +24,16 @@ artemis:
       concurrentConsumers: 5
 
 # WebLogic Configuration (Optional - only if WebLogic is available)
-weblogic:
-  jms:
-    url: ${WEBLOGIC_URL:t3://localhost:7001}
-    username: ${WEBLOGIC_USERNAME:weblogic}
-    password: ${WEBLOGIC_PASSWORD:welcome1}
-    initialContextFactory: weblogic.jndi.WLInitialContextFactory
-    connectionFactory: jms/ConnectionFactory
-  queue:
-    input: weblogic.input.queue
+# Uncomment to enable WebLogic integration
+#weblogic:
+#  jms:
+#    url: ${WEBLOGIC_URL:t3://localhost:7001}
+#    username: ${WEBLOGIC_USERNAME:weblogic}
+#    password: ${WEBLOGIC_PASSWORD:welcome1}
+#    initialContextFactory: weblogic.jndi.WLInitialContextFactory
+#    connectionFactory: jms/ConnectionFactory
+#  queue:
+#    input: weblogic.input.queue
 
 # Logging Configuration
 logging:
@@ -49,7 +50,3 @@ spring:
   config:
     activate:
       on-profile: artemis-only
-
-weblogic:
-  jms:
-    url: ""

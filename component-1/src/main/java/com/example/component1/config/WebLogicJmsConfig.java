@@ -15,7 +15,7 @@ import javax.naming.NamingException;
 import java.util.Properties;
 
 @Configuration
-@ConditionalOnProperty(prefix = "weblogic.jms", name = "url")
+@ConditionalOnProperty(prefix = "weblogic.jms", name = "url", matchIfMissing = false)
 public class WebLogicJmsConfig {
 
     private final WebLogicProperties webLogicProperties;
