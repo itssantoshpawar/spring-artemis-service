@@ -1,0 +1,204 @@
+{
+	"info": {
+		"_postman_id": "artemis-jms-poc-collection",
+		"name": "Spring Artemis JMS POC",
+		"description": "Postman collection for testing WebLogic to Artemis JMS migration POC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Component 1 - Send XML to Component 2 Queue",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<order>\n    <orderId>ORD-12345</orderId>\n    <customer>\n        <name>John Doe</name>\n        <email>john.doe@example.com</email>\n    </customer>\n    <items>\n        <item>\n            <productId>PROD-001</productId>\n            <productName>Laptop</productName>\n            <quantity>2</quantity>\n            <price>999.99</price>\n        </item>\n        <item>\n            <productId>PROD-002</productId>\n            <productName>Mouse</productName>\n            <quantity>5</quantity>\n            <price>29.99</price>\n        </item>\n    </items>\n    <totalAmount>2149.93</totalAmount>\n    <timestamp>2024-01-15T10:30:00Z</timestamp>\n</order>"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/messages/send?queue=component2.queue",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"messages",
+						"send"
+					],
+					"query": [
+						{
+							"key": "queue",
+							"value": "component2.queue"
+						}
+					]
+				},
+				"description": "Send XML payload to Component 2 queue via Component 1"
+			},
+			"response": []
+		},
+		{
+			"name": "Component 1 - Send XML to Component 4 Queue",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<transaction>\n    <transactionId>TXN-98765</transactionId>\n    <type>PAYMENT</type>\n    <account>\n        <accountNumber>ACC-123456</accountNumber>\n        <accountHolder>Jane Smith</accountHolder>\n    </account>\n    <amount>1500.50</amount>\n    <currency>USD</currency>\n    <status>PENDING</status>\n    <timestamp>2024-01-15T14:45:00Z</timestamp>\n</transaction>"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/messages/send?queue=component4.queue",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"messages",
+						"send"
+					],
+					"query": [
+						{
+							"key": "queue",
+							"value": "component4.queue"
+						}
+					]
+				},
+				"description": "Send XML payload to Component 4 queue via Component 1"
+			},
+			"response": []
+		},
+		{
+			"name": "Component 1 - Send JSON Message",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"messageId\": \"MSG-54321\",\n    \"messageType\": \"NOTIFICATION\",\n    \"sender\": \"system@example.com\",\n    \"recipient\": \"user@example.com\",\n    \"subject\": \"Order Confirmation\",\n    \"body\": \"Your order has been successfully placed and is being processed.\",\n    \"priority\": \"HIGH\",\n    \"timestamp\": \"2024-01-15T16:00:00Z\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/messages/send?queue=component2.queue",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"messages",
+						"send"
+					],
+					"query": [
+						{
+							"key": "queue",
+							"value": "component2.queue"
+						}
+					]
+				},
+				"description": "Send JSON payload to demonstrate JSON support"
+			},
+			"response": []
+		},
+		{
+			"name": "Component 1 - Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/messages/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"messages",
+						"health"
+					]
+				},
+				"description": "Check Component 1 health status"
+			},
+			"response": []
+		},
+		{
+			"name": "Component 1 - Send Large XML Order",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<purchaseOrder>\n    <poNumber>PO-2024-001</poNumber>\n    <orderDate>2024-01-15</orderDate>\n    <vendor>\n        <vendorId>VEN-500</vendorId>\n        <vendorName>Tech Supplies Inc.</vendorName>\n        <contact>\n            <phone>+1-555-0100</phone>\n            <email>orders@techsupplies.com</email>\n        </contact>\n    </vendor>\n    <shipTo>\n        <companyName>ABC Corporation</companyName>\n        <address>\n            <street>123 Business Avenue</street>\n            <city>New York</city>\n            <state>NY</state>\n            <zip>10001</zip>\n            <country>USA</country>\n        </address>\n    </shipTo>\n    <items>\n        <item>\n            <itemNumber>1</itemNumber>\n            <sku>SKU-12345</sku>\n            <description>Professional Laptop - 16GB RAM, 512GB SSD</description>\n            <quantity>10</quantity>\n            <unitPrice>1299.99</unitPrice>\n            <lineTotal>12999.90</lineTotal>\n        </item>\n        <item>\n            <itemNumber>2</itemNumber>\n            <sku>SKU-23456</sku>\n            <description>Wireless Mouse - Ergonomic Design</description>\n            <quantity>25</quantity>\n            <unitPrice>49.99</unitPrice>\n            <lineTotal>1249.75</lineTotal>\n        </item>\n        <item>\n            <itemNumber>3</itemNumber>\n            <sku>SKU-34567</sku>\n            <description>Mechanical Keyboard - RGB Backlit</description>\n            <quantity>15</quantity>\n            <unitPrice>89.99</unitPrice>\n            <lineTotal>1349.85</lineTotal>\n        </item>\n    </items>\n    <subtotal>15599.50</subtotal>\n    <tax>1247.96</tax>\n    <shipping>75.00</shipping>\n    <total>16922.46</total>\n    <paymentTerms>Net 30</paymentTerms>\n    <notes>Please deliver by end of month. Contact shipping department for special instructions.</notes>\n</purchaseOrder>"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/messages/send?queue=component2.queue",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"messages",
+						"send"
+					],
+					"query": [
+						{
+							"key": "queue",
+							"value": "component2.queue"
+						}
+					]
+				},
+				"description": "Send a larger, more complex XML payload"
+			},
+			"response": []
+		},
+		{
+			"name": "Artemis Web Console",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8161/console",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8161",
+					"path": [
+						"console"
+					]
+				},
+				"description": "Access Artemis Web Console (credentials: admin/admin)"
+			},
+			"response": []
+		}
+	]
+}
