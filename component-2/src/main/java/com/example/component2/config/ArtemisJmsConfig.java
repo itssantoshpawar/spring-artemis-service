@@ -1,0 +1,41 @@
+package com.example.component2.config;
+
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.connection.CachingConnectionFactory;
+
+import javax.jms.ConnectionFactory;
+
+@Configuration
+public class ArtemisJmsConfig {
+
+    @Value("${artemis.broker.url}")
+    private String brokerUrl;
+
+    @Value("${artemis.broker.user}")
+    private String user;
+
+    @Value("${artemis.broker.password}")
+    private String password;
+
+    @Value("${artemis.listener.concurrent-consumers:5}")
+    private int concurrentConsumers;
+
+    @Bean
+    public ConnectionFactory connectionFactory() {
+        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerUrl, user, password);
+        return new CachingConnectionFactory(factory);
+    }
+
+    @Bean
+    public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        factory.setConcurrency(String.valueOf(concurrentConsumers));
+        factory.setSessionTransacted(true);
+        return factory;
+    }
+}

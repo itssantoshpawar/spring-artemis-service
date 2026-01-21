@@ -1,0 +1,52 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: component-1-adapter
+  jms:
+    template:
+      delivery-mode: persistent
+      session-transacted: true
+
+# Artemis Configuration
+artemis:
+  broker:
+    url: ${ARTEMIS_BROKER_URL:tcp://localhost:61616}
+    user: ${ARTEMIS_BROKER_USER:admin}
+    password: ${ARTEMIS_BROKER_PASSWORD:admin}
+    embedded: false
+  listener:
+    - name: artemis
+      brokerUrl: ${ARTEMIS_BROKER_URL:tcp://localhost:61616}
+      username: ${ARTEMIS_BROKER_USER:admin}
+      password: ${ARTEMIS_BROKER_PASSWORD:admin}
+      concurrentConsumers: 5
+
+# WebLogic Configuration (Optional - only if WebLogic is available)
+# Uncomment to enable WebLogic integration
+#weblogic:
+#  jms:
+#    url: ${WEBLOGIC_URL:t3://localhost:7001}
+#    username: ${WEBLOGIC_USERNAME:weblogic}
+#    password: ${WEBLOGIC_PASSWORD:welcome1}
+#    initialContextFactory: weblogic.jndi.WLInitialContextFactory
+#    connectionFactory: jms/ConnectionFactory
+#  queue:
+#    input: weblogic.input.queue
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.example.component1: DEBUG
+    org.springframework.jms: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+---
+# Profile for running with only Artemis (without WebLogic)
+spring:
+  config:
+    activate:
+      on-profile: artemis-only
